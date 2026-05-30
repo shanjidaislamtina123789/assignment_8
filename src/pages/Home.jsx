@@ -12,7 +12,7 @@ export default function Home({ animals, loading, navigateTo }) {
           </div>
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-black text-stone-900 leading-[1.1]">
             Qurbani Made <span className="text-emerald-800 italic font-medium">Easy</span>,<br />
-            Worship Made <span className="text-emerald-700 decoration-emerald-200">Meaningful</span>.
+            Worship Made <span className="text-emerald-700 decoration-emerald-200">Meaningful</span>
           </h1>
           <p className="text-stone-600 text-base max-w-xl leading-relaxed">
             We make your Qurbani simple, transparent, fully trackable, and 100% Shariah compliant. Secure standard livestock from elite sub-farms across Bangladesh.
