@@ -5,17 +5,17 @@ export default function UpdateProfile({ updateName, setUpdateName, updatePhoto, 
     <section className="px-4 py-12 max-w-md mx-auto">
       <div className="bg-white p-8 rounded-3xl border border-stone-100 shadow-xl space-y-6">
         <div className="space-y-1">
-          <h1 className="font-serif text-xl font-black text-stone-900">Modify Account Parameters</h1>
-          <p className="text-stone-400 text-xs">System sync via better-auth specifications context.</p>
+          <h1 className="font-serif text-xl font-black text-stone-900">Modify Account </h1>
+
         </div>
         
         <form onSubmit={handleProfileUpdate} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1">Target Name String</label>
+            <label className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1">Target Name</label>
             <input type="text" required value={updateName} onChange={(e) => setUpdateName(e.target.value)} className="w-full bg-stone-50 border border-stone-200 focus:border-emerald-800 rounded-xl p-3 text-xs font-medium text-stone-800 focus:outline-none" />
           </div>
           <div>
-            <label className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1">Photo Image Hosted Link</label>
+            <label className="block text-xs font-bold text-stone-600 uppercase tracking-wider mb-1">Photo Image Link</label>
             <input type="url" required value={updatePhoto} onChange={(e) => setUpdatePhoto(e.target.value)} className="w-full bg-stone-50 border border-stone-200 focus:border-emerald-800 rounded-xl p-3 text-xs font-medium text-stone-800 focus:outline-none" />
           </div>
           <div className="flex space-x-3 pt-2">

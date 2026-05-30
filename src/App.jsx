@@ -10,22 +10,32 @@ import Profile from './pages/Profile';
 import UpdateProfile from './pages/UpdateProfile';
 
 export default function App() {
-  const [currentRoute, setCurrentRoute] = useState('home');
+  const [currentRoute, setCurrentRoute] = useState(() => {
+    return localStorage.getItem('lastRoute') || 'home';
+  });
+
   const [animals, setAnimals] = useState([]);
-  const [selectedAnimalId, setSelectedAnimalId] = useState(null);
+  const [selectedAnimalId, setSelectedAnimalId] = useState(() => {
+
+    const savedId = localStorage.getItem('lastSelectedAnimalId');
+    return savedId ? parseInt(savedId, 10) : null;
+  });
+  
   const [loading, setLoading] = useState(true);
   const [priceFilter, setPriceFilter] = useState('all');
-  
-  const [user, setUser] = useState({
-    name: '',
-    email: '',
-    photo: '',
-    isLoggedIn: false
+
+  const [user, setUser] = useState(() => {
+    const savedActiveUser = localStorage.getItem('activeUser');
+    return savedActiveUser ? JSON.parse(savedActiveUser) : {
+      name: '',
+      email: '',
+      photo: '',
+      isLoggedIn: false
+    };
   });
 
   const [toast, setToast] = useState(null);
 
-  // Core Form states
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [regName, setRegName] = useState('');
@@ -39,6 +49,7 @@ export default function App() {
   const [bookPhone, setBookPhone] = useState('');
   const [bookAddress, setBookAddress] = useState('');
 
+
   useEffect(() => {
     fetch('/animals.json')
       .then(res => res.json())
@@ -48,7 +59,6 @@ export default function App() {
       })
       .catch(() => setLoading(false));
   }, []);
-
 
   useEffect(() => {
     if (user.isLoggedIn) {
@@ -62,18 +72,25 @@ export default function App() {
     setTimeout(() => setToast(null), 4000);
   };
 
+
   const navigateTo = (route, id = null) => {
     const privateRoutes = ['details', 'profile', 'update-profile'];
     if (privateRoutes.includes(route) && !user.isLoggedIn) {
       showNotification('Please log in first to access this secure zone!', 'error');
+      localStorage.setItem('lastRoute', 'login');
       setCurrentRoute('login');
       return;
     }
-    if (id) setSelectedAnimalId(id);
+    
+    if (id) {
+      setSelectedAnimalId(id);
+      localStorage.setItem('lastSelectedAnimalId', id.toString());
+    }
+
+    localStorage.setItem('lastRoute', route);
     setCurrentRoute(route);
     window.scrollTo(0, 0);
   };
-
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -82,33 +99,33 @@ export default function App() {
       return;
     }
     
-    // ব্রাউজারের সাময়িক মেমোরি থেকে ডাটা চেক করা হচ্ছে
     const savedUserData = localStorage.getItem('registeredUser');
     const parsedUser = savedUserData ? JSON.parse(savedUserData) : null;
     
-    // রেজিস্ট্রেশন করা ইমেইল ম্যাচ করলে তার প্রোফাইল ডেটা ডায়নামিকালি লোড হবে
+    let loggedInUser = null;
+
     if (parsedUser && parsedUser.email === loginEmail) {
-      setUser({
+      loggedInUser = {
         name: parsedUser.name,
         email: parsedUser.email,
         photo: parsedUser.photo,
         isLoggedIn: true
-      });
+      };
     } else {
-      // যদি অন্য কোনো ইমেইল দিয়ে ট্রাই করা হয়, তবে ইমেইলের প্রথমাংশ নাম হিসেবে জেনারেট হবে
       const fallbackName = loginEmail.split('@')[0];
-      setUser({
+      loggedInUser = {
         name: fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1),
         email: loginEmail,
         photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
         isLoggedIn: true
-      });
+      };
     }
     
+    setUser(loggedInUser);
+    localStorage.setItem('activeUser', JSON.stringify(loggedInUser));
     showNotification('Logged in successfully!');
     navigateTo('home');
   };
-
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -117,22 +134,27 @@ export default function App() {
       return;
     }
     
-    // রেজিস্ট্রেশনের ইনপুট মেমোরিতে সেভ করা হচ্ছে
     localStorage.setItem('registeredUser', JSON.stringify({
       name: regName,
       email: regEmail,
       photo: regPhoto || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'
     }));
     
-    // রিকোয়ারমেন্ট গাইডলাইন অনুযায়ী সফল রেজিস্ট্রেশন শেষে লগইন পেজে ট্রান্সফার করা হলো
     showNotification('Registration successful! Please log in to activate account.');
     navigateTo('login');
   };
+
 
   const handleLogout = () => {
     setUser({ name: '', email: '', photo: '', isLoggedIn: false });
     setLoginEmail('');
     setLoginPassword('');
+    
+  
+    localStorage.removeItem('activeUser');
+    localStorage.removeItem('lastRoute');
+    localStorage.removeItem('lastSelectedAnimalId');
+    
     showNotification('Session cleared safely.', 'info');
     navigateTo('home');
   };
@@ -147,9 +169,10 @@ export default function App() {
 
   const handleProfileUpdate = (e) => {
     e.preventDefault();
-    setUser(prev => ({ ...prev, name: updateName, photo: updatePhoto }));
-    
-    // প্রোফাইল আপডেট করলে লোকাল স্টোরেজের ডেটাও সিঙ্ক করে নেওয়া হচ্ছে
+    const updatedUserData = { ...user, name: updateName, photo: updatePhoto };
+    setUser(updatedUserData);
+    localStorage.setItem('activeUser', JSON.stringify(updatedUserData));
+
     const savedUserData = localStorage.getItem('registeredUser');
     if (savedUserData) {
       const parsed = JSON.parse(savedUserData);
@@ -169,6 +192,8 @@ export default function App() {
   });
 
   const targetAnimal = animals.find(a => a.id === selectedAnimalId);
+
+  const validRoutes = ['home', 'animals', 'details', 'login', 'register', 'profile', 'update-profile'];
 
   return (
     <div className="min-h-screen bg-[#FDFDFB] text-slate-800 font-sans antialiased">
@@ -210,6 +235,14 @@ export default function App() {
         
         {currentRoute === 'update-profile' && (
           <UpdateProfile updateName={updateName} setUpdateName={setUpdateName} updatePhoto={updatePhoto} setUpdatePhoto={setUpdatePhoto} handleProfileUpdate={handleProfileUpdate} navigateTo={navigateTo} />
+        )}
+
+        {!validRoutes.includes(currentRoute) && (
+          <section className="px-4 py-24 text-center max-w-md mx-auto space-y-4">
+            <h1 className="text-6xl font-black text-stone-300 font-serif">404</h1>
+            <p className="text-sm text-stone-500 font-medium">The livestock parameter route you are seeking does not exist.</p>
+            <button onClick={() => navigateTo('home')} className="mt-2 inline-block bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs uppercase tracking-wider py-3 px-6 rounded-xl transition-all">Back to Home</button>
+          </section>
         )}
       </main>
 

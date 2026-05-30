@@ -5,7 +5,6 @@ export default function Footer() {
     <footer className="bg-[#111111] text-stone-400 py-12 px-6 border-t border-stone-800">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
         
-        {/* BRAND COLUMN */}
         <div className="space-y-4">
           <div className="flex items-center space-x-3">
             <span className="bg-emerald-800 text-white font-black px-3 py-1.5 rounded-xl text-lg tracking-wider">Q</span>

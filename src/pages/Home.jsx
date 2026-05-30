@@ -4,7 +4,7 @@ import { Star, ArrowRight, Play, Scale, MapPin, CheckCircle } from 'lucide-react
 export default function Home({ animals, loading, navigateTo }) {
   return (
     <div>
-      {/* HERO SECTION */}
+ 
       <section className="px-4 lg:px-12 py-12 lg:py-20 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-7 space-y-6">
           <div className="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-800 border border-emerald-100 px-4 py-2 rounded-full text-xs font-semibold">
@@ -42,7 +42,6 @@ export default function Home({ animals, loading, navigateTo }) {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
       <section className="bg-stone-50 border-y border-stone-100 py-16 px-4">
         <div className="max-w-7xl mx-auto text-center space-y-4">
           <p className="text-xs tracking-widest text-emerald-800 uppercase font-bold">How It Works</p>
@@ -64,7 +63,6 @@ export default function Home({ animals, loading, navigateTo }) {
         </div>
       </section>
 
-      {/* FEATURED ANIMALS */}
       <section className="px-4 lg:px-12 py-16 max-w-7xl mx-auto space-y-10">
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
           <div>
@@ -110,7 +108,6 @@ export default function Home({ animals, loading, navigateTo }) {
         )}
       </section>
 
-      {/* EXTRA SECTIONS */}
       <section className="bg-emerald-950 text-stone-100 py-16 px-4 lg:px-12">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-6">
