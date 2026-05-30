@@ -21,7 +21,7 @@ export default function Navbar({ currentRoute, navigateTo, user, handleLogout })
       </div>
 
       <div className="flex items-center space-x-4">
-        <span className="hidden lg:inline text-xs font-semibold text-stone-500 bg-stone-100 px-3 py-1.5 rounded-full">📞 01712-345678</span>
+
         {user.isLoggedIn ? (
           <div className="flex items-center space-x-3 bg-stone-50 p-1.5 pr-4 rounded-full border border-stone-100">
             <img src={user.photo} alt={user.name} className="w-8 h-8 rounded-full object-cover border-2 border-emerald-700" />

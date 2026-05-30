@@ -9,10 +9,7 @@ export default function Profile({ user, navigateTo }) {
         <div className="px-8 pb-8 relative">
           <div className="flex flex-col sm:flex-row items-center justify-between -mt-16 mb-6 gap-4">
             <img src={user.photo || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200'} alt={user.name} className="w-28 h-28 rounded-2xl object-cover border-4 border-white shadow-md bg-white" />
-            <button onClick={() => navigateTo('update-profile')} className="sm:mt-16 bg-stone-900 hover:bg-emerald-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center space-x-2 transition-colors">
-              <Edit size={14} />
-              <span>Update Metadata Information</span>
-            </button>
+            
           </div>
 
           <div className="space-y-4 pt-2">

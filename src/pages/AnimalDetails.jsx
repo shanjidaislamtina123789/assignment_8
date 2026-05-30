@@ -5,7 +5,7 @@ export default function AnimalDetails({ targetAnimal, user, bookPhone, setBookPh
   return (
     <section className="px-4 lg:px-12 py-12 max-w-6xl mx-auto">
       <button onClick={() => navigateTo('animals')} className="text-xs font-bold text-stone-500 hover:text-emerald-800 flex items-center space-x-1 mb-6">
-        <span>← Back to Marketplace inventory database</span>
+       
       </button>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 bg-white p-6 lg:p-10 rounded-3xl border border-stone-100 shadow-xl">
         <div className="lg:col-span-7 space-y-6">
@@ -64,7 +64,6 @@ export default function AnimalDetails({ targetAnimal, user, bookPhone, setBookPh
               <button type="submit" className="w-full bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs uppercase tracking-widest py-4 rounded-xl transition-colors shadow-md">Confirm Instant Booking</button>
             </form>
           </div>
-          <p className="text-[10px] text-stone-400 text-center leading-relaxed mt-6">🔒 Encrypted authentication interface.</p>
         </div>
       </div>
     </section>

@@ -7,7 +7,7 @@ export default function AllAnimals({ sortedAnimals, priceFilter, setPriceFilter,
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-stone-100 pb-6 gap-4">
         <div>
           <h1 className="font-serif text-3xl font-black text-stone-900">Explore Active Haat Listing</h1>
-          <p className="text-stone-500 text-sm mt-1">Filter, isolate metrics, and secure standard verified livestock profiles below.</p>
+
         </div>
         <div className="flex items-center space-x-3 w-full sm:w-auto">
           <span className="text-xs font-bold text-stone-500 whitespace-nowrap">Sort By Price:</span>

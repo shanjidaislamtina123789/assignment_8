@@ -8,12 +8,11 @@ export default function Home({ animals, loading, navigateTo }) {
       <section className="px-4 lg:px-12 py-12 lg:py-20 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-7 space-y-6">
           <div className="inline-flex items-center space-x-2 bg-emerald-50 text-emerald-800 border border-emerald-100 px-4 py-2 rounded-full text-xs font-semibold">
-            <Star size={14} className="fill-emerald-800 text-emerald-800" />
-            <span>Trusted by 5000+ Bangladeshi Families</span>
+
           </div>
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-black text-stone-900 leading-[1.1]">
             Qurbani Made <span className="text-emerald-800 italic font-medium">Easy</span>,<br />
-            Worship Made <span className="text-emerald-700 underline decoration-wavy decoration-emerald-200">Meaningful</span>.
+            Worship Made <span className="text-emerald-700 decoration-emerald-200">Meaningful</span>.
           </h1>
           <p className="text-stone-600 text-base max-w-xl leading-relaxed">
             We make your Qurbani simple, transparent, fully trackable, and 100% Shariah compliant. Secure standard livestock from elite sub-farms across Bangladesh.

@@ -17,15 +17,15 @@ export default function App() {
   const [priceFilter, setPriceFilter] = useState('all');
   
   const [user, setUser] = useState({
-    name: 'Tina',
-    email: 'tina@varsity.edu',
-    photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-    isLoggedIn: true
+    name: '',
+    email: '',
+    photo: '',
+    isLoggedIn: false
   });
 
   const [toast, setToast] = useState(null);
 
-  // Form states mapping
+  // Core Form states
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [regName, setRegName] = useState('');
@@ -33,8 +33,8 @@ export default function App() {
   const [regPhoto, setRegPhoto] = useState('');
   const [regPassword, setRegPassword] = useState('');
   
-  const [updateName, setUpdateName] = useState(user.name);
-  const [updatePhoto, setUpdatePhoto] = useState(user.photo);
+  const [updateName, setUpdateName] = useState('');
+  const [updatePhoto, setUpdatePhoto] = useState('');
 
   const [bookPhone, setBookPhone] = useState('');
   const [bookAddress, setBookAddress] = useState('');
@@ -48,6 +48,14 @@ export default function App() {
       })
       .catch(() => setLoading(false));
   }, []);
+
+
+  useEffect(() => {
+    if (user.isLoggedIn) {
+      setUpdateName(user.name);
+      setUpdatePhoto(user.photo);
+    }
+  }, [user]);
 
   const showNotification = (msg, type = 'success') => {
     setToast({ text: msg, type });
@@ -66,58 +74,72 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
+
   const handleLogin = (e) => {
     e.preventDefault();
     if (!loginEmail || !loginPassword) {
-      showNotification('Fill all inputs!', 'error');
+      showNotification('Please fill in all credentials!', 'error');
       return;
     }
-    setUser({
-      name: 'Tina Developer',
-      email: loginEmail,
-      photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200',
-      isLoggedIn: true
-    });
-    showNotification('Welcome back! Verified successfully.');
+    
+    // ব্রাউজারের সাময়িক মেমোরি থেকে ডাটা চেক করা হচ্ছে
+    const savedUserData = localStorage.getItem('registeredUser');
+    const parsedUser = savedUserData ? JSON.parse(savedUserData) : null;
+    
+    // রেজিস্ট্রেশন করা ইমেইল ম্যাচ করলে তার প্রোফাইল ডেটা ডায়নামিকালি লোড হবে
+    if (parsedUser && parsedUser.email === loginEmail) {
+      setUser({
+        name: parsedUser.name,
+        email: parsedUser.email,
+        photo: parsedUser.photo,
+        isLoggedIn: true
+      });
+    } else {
+      // যদি অন্য কোনো ইমেইল দিয়ে ট্রাই করা হয়, তবে ইমেইলের প্রথমাংশ নাম হিসেবে জেনারেট হবে
+      const fallbackName = loginEmail.split('@')[0];
+      setUser({
+        name: fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1),
+        email: loginEmail,
+        photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+        isLoggedIn: true
+      });
+    }
+    
+    showNotification('Logged in successfully!');
     navigateTo('home');
   };
+
 
   const handleRegister = (e) => {
     e.preventDefault();
     if (!regName || !regEmail || !regPassword) {
-      showNotification('Required registration inputs missing!', 'error');
+      showNotification('Required inputs are missing!', 'error');
       return;
     }
-    setUser({
+    
+    // রেজিস্ট্রেশনের ইনপুট মেমোরিতে সেভ করা হচ্ছে
+    localStorage.setItem('registeredUser', JSON.stringify({
       name: regName,
       email: regEmail,
-      photo: regPhoto || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200',
-      isLoggedIn: true
-    });
-    showNotification('Account onboarding authenticated cleanly!');
-    navigateTo('home');
-  };
-
-  const handleSocialLogin = () => {
-    setUser({
-      name: 'Tina (Google SSO)',
-      email: 'tina.google@gmail.com',
-      photo: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=200',
-      isLoggedIn: true
-    });
-    showNotification('Google Authentication complete.');
-    navigateTo('home');
+      photo: regPhoto || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'
+    }));
+    
+    // রিকোয়ারমেন্ট গাইডলাইন অনুযায়ী সফল রেজিস্ট্রেশন শেষে লগইন পেজে ট্রান্সফার করা হলো
+    showNotification('Registration successful! Please log in to activate account.');
+    navigateTo('login');
   };
 
   const handleLogout = () => {
     setUser({ name: '', email: '', photo: '', isLoggedIn: false });
-    showNotification('Session logs destroyed safely.', 'info');
+    setLoginEmail('');
+    setLoginPassword('');
+    showNotification('Session cleared safely.', 'info');
     navigateTo('home');
   };
 
   const handleBookingSubmit = (e) => {
     e.preventDefault();
-    showNotification('Alhamdulillah! Your Qurbani booking is tracked.');
+    showNotification('Alhamdulillah! Your booking form parameters are registered.');
     setBookPhone('');
     setBookAddress('');
     navigateTo('home');
@@ -126,7 +148,17 @@ export default function App() {
   const handleProfileUpdate = (e) => {
     e.preventDefault();
     setUser(prev => ({ ...prev, name: updateName, photo: updatePhoto }));
-    showNotification('Profile updated perfectly.');
+    
+    // প্রোফাইল আপডেট করলে লোকাল স্টোরেজের ডেটাও সিঙ্ক করে নেওয়া হচ্ছে
+    const savedUserData = localStorage.getItem('registeredUser');
+    if (savedUserData) {
+      const parsed = JSON.parse(savedUserData);
+      parsed.name = updateName;
+      parsed.photo = updatePhoto;
+      localStorage.setItem('registeredUser', JSON.stringify(parsed));
+    }
+    
+    showNotification('Profile data updated successfully.');
     navigateTo('profile');
   };
 
@@ -140,25 +172,45 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#FDFDFB] text-slate-800 font-sans antialiased">
-      {/* TOAST SYSTEM */}
+   
       {toast && (
-        <div className={`fixed top-5 right-5 z-50 flex items-center p-4 rounded-xl shadow-2xl text-white ${
+        <div className={`fixed top-5 right-5 z-50 flex items-center p-4 rounded-xl shadow-2xl text-white transition-all duration-300 ${
           toast.type === 'error' ? 'bg-rose-600' : toast.type === 'info' ? 'bg-amber-600' : 'bg-emerald-800'
         }`}>
-          <span className="font-medium text-sm">{toast.text}</span>
+          <span className="font-bold text-xs tracking-wide">{toast.text}</span>
         </div>
       )}
 
       <Navbar currentRoute={currentRoute} navigateTo={navigateTo} user={user} handleLogout={handleLogout} />
 
       <main className="pb-24">
-        {currentRoute === 'home' && <Home animals={animals} loading={loading} navigateTo={navigateTo} />}
-        {currentRoute === 'animals' && <AllAnimals sortedAnimals={sortedAnimals} priceFilter={priceFilter} setPriceFilter={setPriceFilter} navigateTo={navigateTo} />}
-        {currentRoute === 'details' && targetAnimal && <AnimalDetails targetAnimal={targetAnimal} user={user} bookPhone={bookPhone} setBookPhone={setBookPhone} bookAddress={bookAddress} setBookAddress={setBookAddress} handleBookingSubmit={handleBookingSubmit} navigateTo={navigateTo} />}
-        {currentRoute === 'login' && <Login loginEmail={loginEmail} setLoginEmail={setLoginEmail} loginPassword={loginPassword} setLoginPassword={loginPassword} handleLogin={handleLogin} handleSocialLogin={handleSocialLogin} navigateTo={navigateTo} />}
-        {currentRoute === 'register' && <Register regName={regName} setRegName={setRegName} regEmail={regEmail} setRegEmail={setRegEmail} regPhoto={regPhoto} setRegPhoto={setRegPhoto} regPassword={regPassword} setRegPassword={setRegPassword} handleRegister={handleRegister} handleSocialLogin={handleSocialLogin} navigateTo={navigateTo} />}
-        {currentRoute === 'profile' && <Profile user={user} navigateTo={navigateTo} />}
-        {currentRoute === 'update-profile' && <UpdateProfile updateName={updateName} setUpdateName={setUpdateName} updatePhoto={updatePhoto} setUpdatePhoto={setUpdatePhoto} handleProfileUpdate={handleProfileUpdate} navigateTo={navigateTo} />}
+        {currentRoute === 'home' && (
+          <Home animals={animals} loading={loading} navigateTo={navigateTo} />
+        )}
+        
+        {currentRoute === 'animals' && (
+          <AllAnimals sortedAnimals={sortedAnimals} priceFilter={priceFilter} setPriceFilter={setPriceFilter} navigateTo={navigateTo} />
+        )}
+        
+        {currentRoute === 'details' && targetAnimal && (
+          <AnimalDetails targetAnimal={targetAnimal} user={user} bookPhone={bookPhone} setBookPhone={setBookPhone} bookAddress={bookAddress} setBookAddress={setBookAddress} handleBookingSubmit={handleBookingSubmit} navigateTo={navigateTo} />
+        )}
+        
+        {currentRoute === 'login' && (
+          <Login loginEmail={loginEmail} setLoginEmail={setLoginEmail} loginPassword={loginPassword} setLoginPassword={setLoginPassword} handleLogin={handleLogin} navigateTo={navigateTo} />
+        )}
+        
+        {currentRoute === 'register' && (
+          <Register regName={regName} setRegName={setRegName} regEmail={regEmail} setRegEmail={setRegEmail} regPhoto={regPhoto} setRegPhoto={setRegPhoto} regPassword={regPassword} setRegPassword={setRegPassword} handleRegister={handleRegister} navigateTo={navigateTo} />
+        )}
+        
+        {currentRoute === 'profile' && (
+          <Profile user={user} navigateTo={navigateTo} />
+        )}
+        
+        {currentRoute === 'update-profile' && (
+          <UpdateProfile updateName={updateName} setUpdateName={setUpdateName} updatePhoto={updatePhoto} setUpdatePhoto={setUpdatePhoto} handleProfileUpdate={handleProfileUpdate} navigateTo={navigateTo} />
+        )}
       </main>
 
       <Footer />
